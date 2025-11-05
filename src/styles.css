@@ -1,0 +1,28 @@
+:root{
+  --bg: #0b0f14;
+  --card: #0f1720;
+  --muted: #9aa4b2;
+  --accent: #4ade80;
+  --text: #e6eef6;
+}
+*{box-sizing:border-box}
+body,html,#root{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:Inter,Segoe UI,Roboto,Arial}
+.app-root{min-height:100vh;display:flex;flex-direction:column}
+.navbar{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:linear-gradient(90deg,#071018 0%, #0b1722 100%);border-bottom:1px solid rgba(255,255,255,0.03)}
+.logo{font-weight:700;font-size:1.1rem}
+.nav-links a{color:var(--muted);margin-right:12px;text-decoration:none}
+.nav-links a.active{color:var(--accent);font-weight:600}
+.app-main{padding:24px;flex:1}
+.card{background:var(--card);padding:18px;border-radius:10px;margin-bottom:18px;box-shadow:0 2px 10px rgba(2,6,23,0.6)}
+.page.checkout .card{max-width:680px}
+label{display:block;margin:10px 0;color:var(--muted)}
+input{width:100%;padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--text)}
+.actions{margin-top:12px}
+button{background:var(--accent);border:none;padding:8px 12px;border-radius:8px;color:#042018;font-weight:700;cursor:pointer}
+.invoice{margin-top:14px;padding:10px;background:rgba(255,255,255,0.02);border-radius:8px}
+.page.dashboard .chart{height:240px}
+table{width:100%;border-collapse:collapse}
+th,td{padding:8px;text-align:left;border-bottom:1px dashed rgba(255,255,255,0.02);font-size:0.95rem}
+.status.paid{color:var(--accent);font-weight:700}
+.status.pending{color:#ffd166}
+.status.failed{color:#ff6b6b}

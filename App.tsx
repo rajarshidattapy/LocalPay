@@ -1,40 +1,29 @@
-import {
-  TonConnectUIProvider,
-  TonConnectButton,
-  useTonConnectUI,
-  useTonWallet
-} from '@tonconnect/ui-react';
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { TonConnectUIProvider } from '@tonconnect/ui-react';
+import { InvoiceProvider } from './src/InvoiceContext';
+import Navbar from './src/components/Navbar';
+import Checkout from './src/pages/Checkout';
+import Dashboard from './src/pages/Dashboard';
 
-function WalletActions() {
-  const [tonConnectUI] = useTonConnectUI();
-  const wallet = useTonWallet();
-
-  const sendOneTon = async () => {
-    if (!wallet) return;
-
-    await tonConnectUI.sendTransaction({
-      validUntil: Math.floor(Date.now() / 1000) + 300,
-      messages: [
-        {
-          address: wallet.account.address,
-          amount: '1000000000'
-        }
-      ]
-    });
-  };
-
-  return (
-    <>
-      <TonConnectButton />
-      <button onClick={sendOneTon}>Send 1 TON</button>
-    </>
-  );
-}
+import './src/styles.css';
 
 export default function App() {
   return (
     <TonConnectUIProvider manifestUrl="https://ton-connect.github.io/demo-dapp-with-react-ui/tonconnect-manifest.json">
-      <WalletActions />
+      <InvoiceProvider>
+        <BrowserRouter>
+          <div className="app-root">
+            <Navbar />
+            <main className="app-main">
+              <Routes>
+                <Route path="/" element={<Checkout />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+              </Routes>
+            </main>
+          </div>
+        </BrowserRouter>
+      </InvoiceProvider>
     </TonConnectUIProvider>
   );
 }
