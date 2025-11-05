@@ -1,98 +1,114 @@
-import React, { useState } from 'react';
-import { useTonConnectUI, useTonWallet } from '@tonconnect/ui-react';
-import { useInvoices } from '../InvoiceContext';
+import { useEffect, useState } from 'react';
+import { TonConnectButton } from '@tonconnect/ui-react';
+import { usePayments } from '../context/PaymentContext';
+import { createInvoice, generateTransactionHash, simulatePayment } from '../utils/invoiceGenerator';
+import { useNavigate } from 'react-router-dom';
+import { useToast } from '../components/ToastProvider';
 
-const Checkout: React.FC = () => {
-  const { addInvoice, markPaid, markFailed } = useInvoices();
-  const [amount, setAmount] = useState<number>(0.01);
-  const [merchantName, setMerchantName] = useState<string>('Demo Merchant');
-  const [merchantAddress, setMerchantAddress] = useState<string>('');
-  const [created, setCreated] = useState<any>(null);
+export function Checkout() {
+  const { addInvoice, updateInvoiceStatus, cart, clearCart, cartTotal } = usePayments();
+  const [merchant, setMerchant] = useState('LocalPay Store');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+  const navigate = useNavigate();
+  const { addToast } = useToast();
 
-  const [tonConnectUI]: any = useTonConnectUI();
-  const wallet: any = useTonWallet();
+  // mock rate: 1 TON = 2.5 USD
+  const MOCK_RATE = 2.5;
+  const totalUSD = cartTotal();
+  const amountTON = totalUSD > 0 ? +(totalUSD / MOCK_RATE).toFixed(4) : 0;
 
-  const createInvoice = () => {
-    if (!amount || amount <= 0) return;
-    const inv = addInvoice({ merchantName, merchantAddress, amount });
-    setCreated(inv);
-  };
-
-  const payInvoice = async (invId: string) => {
-    // find invoice from storage/state (we already have it via created)
+  useEffect(() => {
+    // configure Telegram MainButton if available
+    const win = window as any;
     try {
-      // try to use TON Connect if available
-      if (tonConnectUI && merchantAddress) {
-        const nanotons = String(Math.round(amount * 1e9));
-        const result: any = await tonConnectUI.sendTransaction({
-          validUntil: Math.floor(Date.now() / 1000) + 300,
-          messages: [
-            {
-              address: merchantAddress,
-              amount: nanotons
-            }
-          ]
-        });
-        // result may contain id or txHash depending on wallet; fallback to generated
-        const txHash = (result && (result.id || result.txHash)) || `tx_${Date.now()}_${Math.random().toString(36).slice(2,6)}`;
-        markPaid(invId, txHash);
-        setCreated((c: any) => (c && c.id === invId ? { ...c, status: 'paid', txHash } : c));
-        return;
+      if (win.Telegram && win.Telegram.WebApp) {
+        const WebApp = win.Telegram.WebApp;
+        WebApp.MainButton.setText(`Pay ${amountTON} TON`);
+        WebApp.MainButton.show();
+        WebApp.MainButton.onPress(handlePayment);
+        return () => {
+          WebApp.MainButton.offPress && WebApp.MainButton.offPress(handlePayment);
+          WebApp.MainButton.hide();
+        };
       }
-
-      // fallback simulation
-      const txHash = `sim_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-      // small delay to simulate
-      setTimeout(() => {
-        markPaid(invId, txHash);
-        setCreated((c: any) => (c && c.id === invId ? { ...c, status: 'paid', txHash } : c));
-      }, 900);
-    } catch (e) {
-      console.error('Payment failed', e);
-      markFailed(invId);
-      setCreated((c: any) => (c && c.id === invId ? { ...c, status: 'failed' } : c));
+    } catch {
+      // ignore
     }
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [amountTON, cart.length]);
+
+  async function handlePayment() {
+    if (cart.length === 0) {
+      setMessage('Your cart is empty');
+      addToast('Your cart is empty');
+      return;
+    }
+
+    setLoading(true);
+    setMessage('');
+
+    try {
+      const invoice = createInvoice(String(amountTON), merchant);
+      addInvoice(invoice);
+
+      addToast('Processing payment...');
+
+      // simulate TON payment
+      const { transactionHash } = await simulatePayment(amountTON, 1400 + Math.random() * 1600);
+
+      updateInvoiceStatus(invoice.id, transactionHash);
+      addToast('Payment confirmed');
+      clearCart();
+
+      navigate('/success', { state: { txHash: transactionHash } });
+    } catch (err) {
+      setMessage('Payment failed');
+      addToast('Payment failed');
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
-    <div className="page checkout">
-      <div className="card">
-        <h2>Create Invoice</h2>
-        <label>
-          Merchant name
-          <input value={merchantName} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMerchantName(e.target.value)} />
-        </label>
-        <label>
-          Merchant receiving address (paste TON address or leave empty to simulate)
-          <input value={merchantAddress} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMerchantAddress(e.target.value)} placeholder="EQ..." />
-        </label>
-        <label>
-          Amount (TON)
-          <input type="number" step="0.01" value={amount} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAmount(Number(e.target.value))} />
-        </label>
+    <div className="page-container">
+      <div className="checkout-card">
+        <h2 className="page-title">Checkout</h2>
+        <p className="subtitle">Complete your order using TON (simulated)</p>
 
-        <div className="actions">
-          <button onClick={createInvoice}>Create Invoice</button>
+        <div className="wallet-section">
+          <TonConnectButton />
         </div>
 
-        {created && (
-          <div className="invoice">
-            <h3>Invoice created</h3>
-            <p>ID: {created.id}</p>
-            <p>Amount: {created.amount} TON</p>
-            <p>Merchant: {created.merchantName}</p>
-            <p>Status: {created.status}</p>
-            {created.status !== 'paid' && (
-              <button onClick={() => payInvoice(created.id)}>Pay invoice</button>
-            )}
-            {created.txHash && (
-              <p>Tx: <code>{created.txHash}</code></p>
-            )}
+        <div className="payment-form">
+          <div className="form-group">
+            <label>Merchant Name</label>
+            <input
+              type="text"
+              value={merchant}
+              onChange={(e) => setMerchant(e.target.value)}
+              className="input-field"
+              placeholder="Enter merchant name"
+            />
           </div>
-        )}
+
+          <div className="form-group">
+            <label>Order Total (USD)</label>
+            <div className="total-amount">${totalUSD.toFixed(2)}</div>
+          </div>
+
+          <div className="form-group">
+            <label>Amount (TON)</label>
+            <div className="total-amount">{amountTON} TON (1 TON = ${MOCK_RATE} USD)</div>
+          </div>
+
+          <button onClick={handlePayment} disabled={loading} className="pay-button">
+            {loading ? 'Processing...' : `Pay ${amountTON} TON`}
+          </button>
+
+          {message && <div className={`message ${message.includes('failed') ? 'error' : 'success'}`}>{message}</div>}
+        </div>
       </div>
     </div>
   );
-};
-
-export default Checkout;
+}

@@ -1,4 +1,4 @@
-# TON Connect React UI Kit
+# TON Connect React Example
 
 A minimal demo dApp using [`@tonconnect/ui-react`](https://github.com/ton-connect/sdk/tree/main/packages/ui-react).
 

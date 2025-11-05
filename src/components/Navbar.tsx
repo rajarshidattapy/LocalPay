@@ -1,26 +1,35 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { TonConnectButton } from '@tonconnect/ui-react';
+import { Link, useLocation } from 'react-router-dom';
+import { usePayments } from '../context/PaymentContext';
 
-const Navbar: React.FC = () => {
+export function Navbar() {
+  const location = useLocation();
+  const { cart } = usePayments();
+
   return (
-    <header className="navbar">
-      <div className="nav-left">
-        <div className="logo">LocalPay</div>
-        <nav className="nav-links">
-          <NavLink to="/" end className={({ isActive }) => (isActive ? 'active' : '')}>
-            Checkout
-          </NavLink>
-          <NavLink to="/dashboard" className={({ isActive }) => (isActive ? 'active' : '')}>
+    <nav className="navbar">
+      <div className="nav-container">
+        <h1 className="logo">💎 LocalPay</h1>
+        <div className="nav-links">
+          <Link
+            to="/"
+            className={location.pathname === '/' ? 'nav-link active' : 'nav-link'}
+          >
+            Shop
+          </Link>
+          <Link
+            to="/cart"
+            className={location.pathname === '/cart' ? 'nav-link active' : 'nav-link'}
+          >
+            Cart{cart.length > 0 ? ` (${cart.reduce((s, i) => s + i.quantity, 0)})` : ''}
+          </Link>
+          <Link
+            to="/dashboard"
+            className={location.pathname === '/dashboard' ? 'nav-link active' : 'nav-link'}
+          >
             Dashboard
-          </NavLink>
-        </nav>
+          </Link>
+        </div>
       </div>
-      <div className="nav-right">
-        <TonConnectButton />
-      </div>
-    </header>
+    </nav>
   );
-};
-
-export default Navbar;
+}
