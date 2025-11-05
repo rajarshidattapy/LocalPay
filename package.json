@@ -9,10 +9,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@tonconnect/ui-react": "^2.2.0",
+    "@clerk/clerk-react": "^5.53.6",
+    "@clerk/nextjs": "^6.34.3",
+    "@tonconnect/sdk": "^3.3.1",
+    "@tonconnect/ui-react": "^2.3.1",
+    "buffer": "^6.0.3",
+    "chart.js": "^4.5.1",
+    "next-auth": "^4.24.13",
     "react": "^18.2.0",
+    "react-chartjs-2": "^5.3.1",
     "react-dom": "^18.2.0",
-    "buffer": "^6.0.3"
+    "react-router-dom": "^7.9.5"
   },
   "devDependencies": {
     "@types/react": "^18.2.24",
