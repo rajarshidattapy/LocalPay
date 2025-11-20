@@ -1,0 +1,38 @@
+### NFT API Example Requests - FULL COLLECTION DEPLOYMENT
+### Use with REST Client extension in VS Code or copy to curl
+
+### 1. Check Wallet Info
+GET http://localhost:3000/wallet-info
+
+###
+
+### 2. Deploy NFT Collection (DO THIS FIRST!)
+POST http://localhost:3000/deploy-collection
+Content-Type: application/json
+
+{
+  "collectionName": "My NFT Collection",
+  "collectionDescription": "A collection of unique digital collectibles",
+  "collectionImage": "https://picsum.photos/800/800"
+}
+
+### WAIT 30 SECONDS AFTER DEPLOYMENT BEFORE MINTING!
+
+###
+
+### 3. Mint NFT from Collection (Will appear in wallets!)
+POST http://localhost:3000/mint-nft
+Content-Type: application/json
+
+{
+  "name": "Awesome NFT #1",
+  "description": "This NFT is minted from a real collection and will show in Tonkeeper!",
+  "image": "https://picsum.photos/500/500"
+}
+
+###
+
+### 4. Get Collection Info
+GET http://localhost:3000/collection-info
+
+###

@@ -1,0 +1,31 @@
+node_modules
+temp
+build
+dist
+.DS_Store
+package.ts
+
+# Compiled JavaScript files
+*.js
+!jest.config.js
+
+# VS Code
+.vscode/*
+.history/
+*.vsix
+
+# Environment
+.env
+
+# IDEA files
+.idea
+
+# VIM
+Session.vim
+.vim/
+
+# Other private editor folders
+.nvim/
+.emacs/
+.helix/
+.env
