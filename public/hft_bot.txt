@@ -1,0 +1,114 @@
+🤖 HFT Bots / Liquidity Providers — Deep Dive
+Purpose
+
+The HFT bots act as autonomous liquidity agents that keep the marketplace liquid, prices stable, and trades instant.
+They continuously monitor TON-based DEXs (like DeDust and StonFi) — and LocalMarket’s own internal AMM — to detect price inefficiencies and execute micro-arbitrage trades in milliseconds.
+
+These bots serve three main roles:
+
+Price Stabilization — maintain tight spreads between LCUSD, TON, and product tokens.
+
+Instant Settlement — supply liquidity instantly when user pools are low.
+
+Yield Generation — earn profits from small spreads, trading fees, and LOCAL token rewards.
+
+How It Works (Step-by-Step)
+1. Market Data Aggregation
+
+The bot subscribes to on-chain and off-chain price feeds:
+
+DeDust & StonFi order books (via APIs/WebSocket).
+
+LocalMarket AMM pool state (on-chain).
+
+Pyth oracle prices for TON and LCUSD.
+
+Builds a real-time price matrix of token pairs:
+
+MANGO-TOKEN/LCUSD  
+LCUSD/TON  
+TON/MANGO-TOKEN
+
+2. Arbitrage Opportunity Detection
+
+The bot continuously compares prices across markets:
+
+Δ = |Price_A - Price_B| 
+if Δ > threshold: trigger trade
+
+
+Example:
+
+MANGO-TOKEN costs 9.95 LCUSD on LocalMarket AMM
+
+But 10.05 LCUSD on DeDust
+→ Bot buys at 9.95, sells at 10.05 → earns 1% spread.
+
+3. Execution Layer
+
+Uses off-chain microservices (Python/Node) connected via TON SDK.
+
+Batch submits atomic swap transactions to AMM smart contract or DEX router.
+
+Executes high-frequency trades (every few seconds/minutes).
+
+Maintains open liquidity positions to minimize gas overhead.
+
+4. Liquidity Provisioning
+
+Bot also functions as a market maker:
+
+Supplies both sides of liquidity pools (LCUSD ↔ product tokens).
+
+Dynamically adjusts position based on predicted demand (from AI Matching Engine).
+
+Keeps pool depth balanced to prevent large price impact.
+
+5. Reward & Settlement
+
+Every profitable trade:
+
+Adds spread profit to bot’s balance.
+
+Earns swap fees (e.g., 0.3% of transaction).
+
+Receives LOCAL token emission (governance reward).
+
+Periodic settlements:
+
+Auto-compounds profits into liquidity pools (yield farming).
+
+Reports activity metrics to DAO for transparency.
+
+Key Technical Stack
+Component	Tech Used
+Bot Framework	Python / Node.js microservice
+Data Feeds	WebSockets from DeDust, StonFi, and TON Indexer
+Execution Layer	TON SDK + smart contract call batching
+AI Integration	LSTM demand forecast → influences liquidity allocation
+Storage	Redis (real-time state), PostgreSQL (trade logs)
+Monitoring	Prometheus + Grafana dashboards for PnL, latency, and slippage
+Architecture Summary
+[DEX APIs]         [LocalMarket AMM]
+     \                   /
+      \                 /
+   [Price Aggregator Service] 
+            ↓
+   [Arbitrage Detector]
+            ↓
+     [Execution Engine] 
+         ↙        ↘
+ [TON SDK Tx]   [Pool Rebalancer]
+            ↓
+     [Profit Tracker + DAO Report]
+
+Bot Example Scenario
+
+A buyer wants to purchase 10 LCUSD worth of mangoes, but LocalMarket AMM has low LCUSD liquidity.
+The HFT bot detects higher LCUSD availability on DeDust, sources liquidity there, and instantly fills the buyer’s trade.
+It earns a small spread + trading fee + LOCAL reward for stabilizing the market.
+
+In Simple Terms
+
+Your HFT bot is the invisible backbone of LocalMarket —
+it keeps the marketplace fast, liquid, and fair, ensuring every mango, craft, or service token always has a stable, instantly tradable price.
