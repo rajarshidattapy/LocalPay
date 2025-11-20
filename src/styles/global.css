@@ -807,3 +807,104 @@ body {
     text-align: center;
   }
 }
+/* --- Glassmorphism Navbar Updates --- */
+.navbar {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid var(--glass-border);
+  padding: 1rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  /* This grid keeps Logo Left, Links Center, Wallet Right */
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  background: linear-gradient(to right, #38bdf8, #0088fe);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.5px;
+  white-space: nowrap;
+}
+
+.nav-links {
+  display: flex;
+  justify-content: center; /* Centers links in the middle space */
+  gap: 1.5rem;
+}
+
+.nav-link {
+  color: #94a3b8;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  position: relative;
+  white-space: nowrap;
+}
+
+.nav-link:hover {
+  color: #fff;
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
+}
+
+.nav-link.active {
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.1);
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.1);
+}
+
+/* Wrapper for the TonButton to ensure it aligns right */
+.wallet-wrapper {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Customize the TonConnect button to match your dark theme */
+/* This targets the button inside the shadow DOM helper classes if needed, 
+   but usually the default looks good. We just ensure it doesn't break layout */
+button[data-tc-button="true"] {
+  /* Ensures the button matches your rounded corners */
+  border-radius: 12px !important;
+}
+
+/* --- Mobile Responsiveness for Navbar --- */
+@media (max-width: 768px) {
+  .nav-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .nav-links {
+    width: 100%;
+    justify-content: space-between; /* Spread links out on mobile */
+    background: rgba(0, 0, 0, 0.2);
+    padding: 0.75rem;
+    border-radius: 16px;
+  }
+
+  .nav-link {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .wallet-wrapper {
+    width: 100%;
+    justify-content: center;
+  }
+}
