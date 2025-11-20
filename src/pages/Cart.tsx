@@ -6,7 +6,6 @@ export function Cart() {
   const { cart, removeFromCart, clearCart, cartTotal } = usePayments();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-
   // const handleCheckout = async () => {
   //   setLoading(true);
   //   console.log("Navigating to cart", cart);
@@ -16,22 +15,17 @@ export function Cart() {
   // };
 
   const handleCheckout = async () => {
-    // Check if cart has items
     if (!cart || cart.length === 0) {
       alert("Your cart is empty!");
       return;
     }
 
-    // Get the first product from the cart (or you can loop through all)
     const firstProduct = cart[0];
-    console.log("First product in cart:", firstProduct);
-
     const body = {
       name: firstProduct.title,
       image: firstProduct.image,
     };
 
-    console.log(body);
     const headers = {
       "Content-Type": "application/json",
     };
@@ -44,10 +38,15 @@ export function Cart() {
         body: JSON.stringify(body),
       });
       const data = await nft.json();
-      console.log(data);
-      // Optional: Navigate to success or show message here
+
+      // 1. Clear the cart logic
+      clearCart();
+
+      // 2. Navigate to Success page and pass the API response in 'state'
+      navigate("/success", { state: data });
     } catch (error) {
       console.error("Checkout error:", error);
+      alert("Something went wrong during deployment.");
     } finally {
       setLoading(false);
     }
