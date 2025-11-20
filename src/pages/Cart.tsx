@@ -14,6 +14,7 @@ export function Cart() {
   //   navigate("/checkout");
   //   setLoading(false);
   // };
+
   const handleCheckout = async () => {
     // Check if cart has items
     if (!cart || cart.length === 0) {
@@ -34,20 +35,40 @@ export function Cart() {
     const headers = {
       "Content-Type": "application/json",
     };
-    const nft = await fetch("http://localhost:3000/deploy-collection", {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify(body),
-    });
-    const data = await nft.json();
-    console.log(data);
+
+    try {
+      setLoading(true);
+      const nft = await fetch("http://localhost:3000/deploy-collection", {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(body),
+      });
+      const data = await nft.json();
+      console.log(data);
+      // Optional: Navigate to success or show message here
+    } catch (error) {
+      console.error("Checkout error:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="page-container">
       <h2 className="page-title">Your Cart</h2>
+
       {cart.length === 0 ? (
-        <div className="empty-state">Your cart is empty</div>
+        <div className="empty-state">
+          <p>Your cart is currently empty.</p>
+          <br />
+          <button
+            className="clear-button"
+            onClick={() => navigate("/")}
+            style={{ marginTop: "1rem" }}
+          >
+            Return to Shop
+          </button>
+        </div>
       ) : (
         <div className="cart-list">
           {cart.map((item) => (
@@ -55,7 +76,7 @@ export function Cart() {
               <img src={item.image} alt={item.title} />
               <div className="cart-info">
                 <div className="cart-title">{item.title}</div>
-                <div className="cart-meta">Qty: {item.quantity}</div>
+                <div className="cart-meta">Quantity: {item.quantity}</div>
               </div>
               <div className="cart-actions">
                 <div className="cart-price">
@@ -72,17 +93,28 @@ export function Cart() {
           ))}
 
           <div className="cart-summary">
-            <div>Total: ${cartTotal().toFixed(2)}</div>
+            <div>
+              <span
+                style={{
+                  color: "#94a3b8",
+                  fontSize: "1rem",
+                  marginRight: "10px",
+                }}
+              >
+                Total:
+              </span>
+              ${cartTotal().toFixed(2)}
+            </div>
             <div className="cart-buttons">
               <button onClick={() => clearCart()} className="clear-button">
-                Clear
+                Clear Cart
               </button>
               <button
                 onClick={handleCheckout}
                 className="checkout-button"
                 disabled={loading}
               >
-                {loading ? "Preparing..." : "Checkout"}
+                {loading ? "Processing..." : "Proceed to Checkout"}
               </button>
             </div>
           </div>
