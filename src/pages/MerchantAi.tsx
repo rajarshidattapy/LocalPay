@@ -135,15 +135,42 @@ export function MerchantAi() {
                             AI Business Insights
                         </h2>
                     </div>
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
-                        {marketMetrics && (
-                            <>
-                                <span className="status-badge paid" style={{ fontSize: '0.8rem' }}>{marketMetrics.marketTrend}</span>
-                                <span className="status-badge pending" style={{ fontSize: '0.8rem' }}>Vol: {marketMetrics.poolVolatility}</span>
-                            </>
-                        )}
-                    </div>
                 </div>
+
+                {/* Market Metrics Bar (Restored) */}
+                {marketMetrics && (
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(4, 1fr)',
+                        gap: '1rem',
+                        marginBottom: '1.5rem'
+                    }}>
+                        <div className="glass-panel" style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#888', letterSpacing: '0.5px' }}>Volatility</div>
+                            <div style={{ fontSize: '1.1rem', fontWeight: '600', color: marketMetrics.poolVolatility === 'High' ? '#ef4444' : '#fff' }}>
+                                {marketMetrics.poolVolatility}
+                            </div>
+                        </div>
+                        <div className="glass-panel" style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#888', letterSpacing: '0.5px' }}>Trend</div>
+                            <div style={{ fontSize: '1.1rem', fontWeight: '600', color: marketMetrics.marketTrend.includes('Bullish') ? '#4ade80' : '#fff' }}>
+                                {marketMetrics.marketTrend}
+                            </div>
+                        </div>
+                        <div className="glass-panel" style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#888', letterSpacing: '0.5px' }}>Volume</div>
+                            <div style={{ fontSize: '1.1rem', fontWeight: '600', color: '#fff' }}>
+                                {marketMetrics.tokenVolume}
+                            </div>
+                        </div>
+                        <div className="glass-panel" style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#888', letterSpacing: '0.5px' }}>Liquidity</div>
+                            <div style={{ fontSize: '1.1rem', fontWeight: '600', color: '#fff' }}>
+                                {marketMetrics.liquidityStatus}
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Main Chat Area */}
                 <div className="glass-panel" style={{
