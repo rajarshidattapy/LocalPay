@@ -1,4 +1,4 @@
-import { Invoice } from '../types';
+import { Invoice, CartItem } from '../types';
 
 export function generateInvoiceId(): string {
   return `INV-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
@@ -10,18 +10,19 @@ export function generateTransactionHash(): string {
   ).join('')}`;
 }
 
-export function createInvoice(amount: string, merchant: string): Invoice {
+export function createInvoice(amount: string, merchant: string, items: CartItem[]): Invoice {
   return {
     id: generateInvoiceId(),
     amount,
     timestamp: Date.now(),
     merchant,
     transactionHash: '',
-    status: 'pending'
+    status: 'pending',
+    items
   };
 }
 
-export function simulatePayment(amount: number, ms = 1500): Promise<{ transactionHash: string }>{
+export function simulatePayment(amount: number, ms = 1500): Promise<{ transactionHash: string }> {
   return new Promise(resolve => {
     // simulate network / wallet interaction delay
     setTimeout(() => {

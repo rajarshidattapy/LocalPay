@@ -35,7 +35,7 @@ export function Checkout() {
     } catch {
       // ignore
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amountTON, cart.length]);
 
   async function handlePayment() {
@@ -49,7 +49,7 @@ export function Checkout() {
     setMessage('');
 
     try {
-      const invoice = createInvoice(String(amountTON), merchant);
+      const invoice = createInvoice(String(amountTON), merchant, cart);
       addInvoice(invoice);
 
       addToast('Processing payment...');

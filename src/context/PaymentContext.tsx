@@ -1,13 +1,5 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { Invoice } from '../types';
-
-export interface CartItem {
-  id: number | string;
-  title: string;
-  price: number;
-  image?: string;
-  quantity: number;
-}
+import { Invoice, CartItem } from '../types';
 
 interface PaymentContextType {
   invoices: Invoice[];
@@ -63,11 +55,22 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
 
   const updateInvoiceStatus = (id: string, transactionHash: string) => {
     setInvoices(prev =>
-      prev.map(inv =>
-        inv.id === id
-          ? { ...inv, status: 'paid' as const, transactionHash }
-          : inv
-      )
+      prev.map(inv => {
+        if (inv.id === id) {
+          const updated = { ...inv, status: 'paid' as const, transactionHash };
+          // Record to Supabase
+          // Fire and forget, but log error if any
+          import('../services/dataService').then(async ({ DataService }) => {
+            try {
+              await DataService.recordSale(updated);
+            } catch (e) {
+              console.error("Failed to record sale to Supabase", e);
+            }
+          });
+          return updated;
+        }
+        return inv;
+      })
     );
   };
 

@@ -1,10 +1,18 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { usePayments } from "../context/PaymentContext";
 import { TonConnectButton } from "@tonconnect/ui-react";
+import { useAuth } from "../context/AuthContext";
 
 export function Navbar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { cart } = usePayments();
+  const { userRole, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <nav className="navbar">
@@ -15,17 +23,17 @@ export function Navbar() {
 
         <div className="nav-links">
           <Link
-            to="/"
+            to={userRole === 'merchant' ? "/merchant/home" : "/"}
             className={
-              location.pathname === "/" ? "nav-link active" : "nav-link"
+              location.pathname === "/" || location.pathname === "/merchant/home" ? "nav-link active" : "nav-link"
             }
           >
             Shop
           </Link>
           <Link
-            to="/cart"
+            to={userRole === 'merchant' ? "/merchant/cart" : "/cart"}
             className={
-              location.pathname === "/cart" ? "nav-link active" : "nav-link"
+              location.pathname === "/cart" || location.pathname === "/merchant/cart" ? "nav-link active" : "nav-link"
             }
           >
             Cart
@@ -33,20 +41,41 @@ export function Navbar() {
               ? ` (${cart.reduce((s, i) => s + i.quantity, 0)})`
               : ""}
           </Link>
-          <Link
-            to="/dashboard"
-            className={
-              location.pathname === "/dashboard"
-                ? "nav-link active"
-                : "nav-link"
-            }
-          >
-            Dashboard
-          </Link>
+
+          {userRole === 'merchant' ? (
+            <Link
+              to="/merchant"
+              className={
+                location.pathname === "/merchant" || location.pathname === "/merchant/ai"
+                  ? "nav-link active"
+                  : "nav-link"
+              }
+            >
+              Merchant Dashboard
+            </Link>
+          ) : (
+            <Link
+              to="/dashboard"
+              className={
+                location.pathname === "/dashboard"
+                  ? "nav-link active"
+                  : "nav-link"
+              }
+            >
+              Dashboard
+            </Link>
+          )}
         </div>
 
-        <div className="wallet-wrapper">
+        <div className="wallet-wrapper" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <TonConnectButton />
+          <button
+            onClick={handleLogout}
+            className="secondary-button"
+            style={{ padding: '6px 12px', fontSize: '0.8rem' }}
+          >
+            Logout
+          </button>
         </div>
       </div>
     </nav>

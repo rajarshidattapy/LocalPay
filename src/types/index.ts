@@ -1,3 +1,11 @@
+export interface CartItem {
+  id: number | string;
+  title: string;
+  price: number;
+  image?: string;
+  quantity: number;
+}
+
 export interface Invoice {
   id: string;
   amount: string;
@@ -5,6 +13,7 @@ export interface Invoice {
   merchant: string;
   transactionHash: string;
   status: "pending" | "paid";
+  items: CartItem[];
 }
 
 export interface PaymentHistory {
