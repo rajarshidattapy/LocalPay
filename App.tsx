@@ -17,6 +17,7 @@ import { MerchantAi } from './src/pages/MerchantAi';
 
 function ProtectedRoute({ children }: { children: JSX.Element }) {
   const { isAuthenticated } = useAuth();
+  // Redirect to /login if not authenticated
   return isAuthenticated ? children : <Navigate to="/login" replace />;
 }
 
